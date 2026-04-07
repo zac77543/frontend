@@ -114,7 +114,7 @@ export default function RegisterForm({
                 <FormItem>
                   <FormControl>
                     <Input
-                      placeholder={t("register.email_placeholder", "Enter your email...")}
+                      placeholder={t("register.email_placeholder", "Enter your email")}
                       type="email"
                       {...field}
                     />
@@ -130,7 +130,7 @@ export default function RegisterForm({
                 <FormItem>
                   <FormControl>
                     <Input
-                      placeholder={t("register.password_placeholder", "Enter your password...")}
+                      placeholder={t("register.password_placeholder", "Enter your password")}
                       type="password"
                       {...field}
                     />
@@ -147,7 +147,7 @@ export default function RegisterForm({
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder={t("register.password_again_placeholder", "Enter password again...")}
+                      placeholder={t("register.password_again_placeholder", "Enter password again")}
                       type="password"
                       {...field}
                     />
@@ -166,7 +166,7 @@ export default function RegisterForm({
                       <div className="flex items-center gap-2">
                         <Input
                           disabled={loading}
-                          placeholder={t("register.code_placeholder", "Enter code...")}
+                          placeholder={t("register.code_placeholder", "Enter code")}
                           type="text"
                           {...field}
                           value={field.value as string}
@@ -177,6 +177,19 @@ export default function RegisterForm({
                             type: 1,
                           }}
                           type="email"
+                          validator={(email) => {
+                            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                              return t("register.email", "Please enter a valid email address");
+                            }
+                            if (auth.email.enable_domain_suffix) {
+                              const domain = email.split("@")[1];
+                              const isValid = auth.email.domain_suffix_list
+                                .split("\n")
+                                .includes(domain || "");
+                              if (!isValid) return t("register.whitelist", "不支持该邮箱域名，请使用 Gmail、QQ 等常用邮箱");
+                            }
+                            return null;
+                          }}
                         />
                       </div>
                     </FormControl>

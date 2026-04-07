@@ -7,6 +7,7 @@ import {
 } from "@workspace/ui/services/common/common";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { useGlobalStore } from "@/stores/global";
 
 interface SendCodeProps {
@@ -17,8 +18,9 @@ interface SendCodeProps {
     telephone_area_code?: string;
     telephone?: string;
   };
+  validator?: (value: string) => string | null;
 }
-export default function SendCode({ type, params }: SendCodeProps) {
+export default function SendCode({ type, params, validator }: SendCodeProps) {
   const { t } = useTranslation("auth");
   const { common } = useGlobalStore();
   const { verify_code_interval } = common.verify_code;
@@ -88,6 +90,13 @@ export default function SendCode({ type, params }: SendCodeProps) {
   };
 
   const handleSendCode = async () => {
+    if (type === "email" && validator) {
+      const error = validator(params.email || "");
+      if (error) {
+        toast.error(error);
+        return;
+      }
+    }
     if (type === "email") {
       getEmailCode();
     } else {
